@@ -1,0 +1,1 @@
+print('adafsf\b\b\b')

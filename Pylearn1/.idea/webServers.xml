@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6c1abc87-aaea-4726-b2a8-b4b4f070e13b" name="LP-Doc">
+        <fileTransfer rootFolder="/home/boylen/boyLenDoc" accessType="SFTP" host="192.168.3.22" port="22" sshConfigId="5e284bdb-0100-44d3-b08b-c483083caaf7" sshConfig="boylen@192.168.3.22:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="788994df-0194-43d7-9cb4-d9e9aaa5577c" name="1215-CF">
+        <fileTransfer rootFolder="/media/disk1/boylen/clowdflows" accessType="SFTP" host="180.201.161.93" port="22" sshConfigId="5d2259a2-2fad-4282-9a68-888a3f7a4c1a" sshConfig="boylen@180.201.161.93:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="dc166847-9fba-4a36-9552-ec400f12ede2" name="LP-CF">
+        <fileTransfer rootFolder="/home/boylen/clowdflows" accessType="SFTP" host="192.168.3.22" port="22" sshConfigId="5e284bdb-0100-44d3-b08b-c483083caaf7" sshConfig="boylen@192.168.3.22:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

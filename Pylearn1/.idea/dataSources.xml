@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="boylen1" uuid="d2c4c21d-0133-4181-817c-150dc8f3c7a8">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\boyLen\py\Pylearn1\boylen1.db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="boylen2" uuid="a9eeac35-c0e6-400a-90d1-17bc13a78771">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\boyLen\py\Pylearn1\boylen2.db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="food" uuid="d8e9baae-d9cb-40b9-b6cd-e8c05d80a934">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\boyLen\py\Pylearn1\food.db</jdbc-url>
+    </data-source>
+  </component>
+</project>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<html>
+<head>
+    <title>boyLen标题1</title>
+    <p id="p_001">文本1 \</p>
+</head>
+<body>
+<p id="p_002" onclick="function1()">文本2</p>
+<input type="checkbox" id="checkbox_001"><br>
+<input type="text" id="input_001" value="默认文本1"><br>
+<button id="button_001" onclick="function2()">BUTTON1</button><br>
+<p id="p_003" onclick="this.innerHTML = 'This代码测试'">P2</p>
+<p id="p_004" onmouseover="this.innerHTML = 'onmouseover代码测试'">P3</p>
+<script type="application/javascript">
+    var z = 5 + 6
+    var string1 = "test1";
+    document.write("计算结果：" + z + "<br>")
+    console.log('AVC')
+    document.getElementById("p_001").innerHTML = "标题文本1改为3"
+
+    function function1() {
+        document.getElementById("p_002").innerHTML = Date()
+    }
+
+    function function2() {
+        this.innerHTML = "This代码测试"
+        alert("当前时间：" + Date())
+        alert("提示框测试")
+    }
+
+</script>
+</body>
+</html>

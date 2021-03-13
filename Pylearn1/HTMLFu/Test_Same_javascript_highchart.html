@@ -1,0 +1,159 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>boyLen绘图模块测试</title>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+
+<body>
+<div id="container_highchart" style="width: 650px; height: 635px; margin: 0 auto"></div>
+<hr/>
+<p id="p_002">Test1</p>
+<button id="button_001">上一页</button>
+<button id="button_002">下一页</button>
+</body>
+
+<style>
+    #p_002 {
+        text-align: right;
+        display: inline
+    }
+
+    #button_001 {
+        position: absolute;
+        right: 70px;
+    }
+
+    #button_002 {
+        position: absolute;
+        right: 10px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // 初始化变量
+        let num_start_index = 0
+        let num_list_length = 3 //设置图形的线条数
+        let weight_next_before = 1 //设置下一页上一页的状态标识符，避免上一页操作时再对数据重复加权
+        // 获取服务器数据文件
+        /*
+        let request1 = new XMLHttpRequest();
+        request1.open('GET', 'Data/data_json_to_plot.json', false);
+        request1.send(null);
+        // Main Function
+        let dic1 = JSON.parse(request1.responseText)*/
+        //const data_list = dic1["data1"]
+        const data_list = [[1, 2, 3, 4, 5, 6, 7], [5, 7, 9, 7, 4, 5, 5], [2, 6, 3, 7, 5, 8, 7], [1, 6, 3, 4, 4, 4, 1], [2, 6, 3, 7, 5, 8, 7], [1, 6, 3, 4, 4, 4, 1], [2, 6, 3, 7, 5, 8, 7], [1, 6, 3, 4, 4, 4, 1], [2, 6, 3, 7, 5, 8, 7], [1, 6, 3, 4, 4, 4, 1]]
+        console.log(data_list)
+        drawer_highchart(select_plot_dic(data_list, num_list_length, num_start_index, weight_next_before = 1)[0], make_col_names(num_list_length, num_start_index))
+
+        $("#button_001").click(function () { //上一页
+            if ((num_start_index - num_list_length) >= 0) {
+                num_start_index = num_start_index - num_list_length
+                drawer_highchart(select_plot_dic(data_list, num_list_length, num_start_index, weight_next_before = 0)[0], make_col_names(num_list_length, num_start_index))
+            } else {
+                $("#button_001").text("最左边");
+                setTimeout(function () {
+                    $("#button_001").text("上一页")
+                }, 1000);
+            }
+        });
+
+        $("#button_002").click(function () { //下一页
+            if ((num_start_index + num_list_length) <= data_list.length) {
+                num_start_index = num_start_index + num_list_length
+                drawer_highchart(select_plot_dic(data_list, num_list_length, num_start_index, weight_next_before = 1)[0], make_col_names(num_list_length, num_start_index)
+                )
+            } else {
+                $("#button_002").text("最右边");
+                setTimeout(function () {
+                    $("#button_001").text("下一页")
+                }, 1000);
+            }
+        });
+    });
+
+    function select_plot_dic(data_all, num_list_length, num_start_index, weight_next_before) {
+        /*
+        该函数一次性生成num_list_length条数据，画在图中就是num_list_length个线条
+        num_start_index设置要提取数据的范围，为”下一页 上一页“做准备
+        num_list_length为plot时的列数
+         */
+        let data_all_dynamic = []
+        data_all_dynamic = data_all.concat()
+
+        let data_list_include_dic = []
+        let data_list = []
+        let division_segy_col = 20000 //地震数据画图时各线条的距离
+        console.log("-----------")
+        console.log(data_all_dynamic)
+        console.log(data_all)
+        console.log("-----------")
+        //↓ 该变量设定曲线分颜色分段显示
+        const area_color_list_to_dic_templates = [{value: -2000, color: 'blue'}, {value: 2000, color: 'red'}];
+
+        for (let i1 = 0; i1 < num_list_length; i1++) {
+            let area_color_list_to_dic = []
+            data_list_include_dic = data_list_include_dic.concat({})  //每个循环都多增加一个{}，否则下面{}加入值时会报错
+
+            //↓ JavaScript不能直接将dic加到list中，必须通过list[dic名]的方式来加dic
+            data_list_include_dic[i1]["name"] = "列" + (i1 + num_start_index).toString()
+            if (weight_next_before === 1) {
+                for (let i2 = 0; i2 < data_all[0].length; i2++) {  //将地震数据的每条曲线进行分离，保持距离
+                    data_all_dynamic[i1 + num_start_index][i2] = data_all[i1 + num_start_index][i2] + (i1 * division_segy_col)
+                }
+            }
+
+            //↓ 设置曲线不同区域不同颜色
+            for (let i3 = 0; i3 < area_color_list_to_dic_templates.length; i3++) {
+                area_color_list_to_dic = area_color_list_to_dic.concat({})
+                area_color_list_to_dic[i3]["value"] = area_color_list_to_dic_templates[i3]["value"] + (i1 * division_segy_col)
+                area_color_list_to_dic[i3]["color"] = area_color_list_to_dic_templates[i3]["color"]
+            }
+            //↓ 生成highchart用的数据格式
+            data_list_include_dic[i1]["data"] = data_all_dynamic[i1 + num_start_index]
+            data_list_include_dic[i1]["zones"] = area_color_list_to_dic
+            data_list[i1] = data_all_dynamic[i1 + num_start_index]
+        }
+        $("#p_002").text("数据总列数：" + data_all_dynamic.length + "；数据总行数：" + data_all_dynamic[0].length + "；当前位置" + num_start_index + "/" + data_all_dynamic.length)
+        return [data_list_include_dic, data_list]
+    }
+
+    function make_col_names(num_list_length, num_start_index) {
+        let col_name_list_to_return = []
+        for (let i1 = 0; i1 < num_list_length; i1++) {
+            col_name_list_to_return[i1] = (i1 + num_start_index).toString()
+        }
+        return col_name_list_to_return
+    }
+
+    function drawer_highchart(highcharts_data, col_name_list) {
+        $('#container_highchart').highcharts({
+            chart: {
+                type: 'line', inverted: true, enableMouseTracking: true, marginLeft: 70, marginRight: 1,
+                spacingLeft: 0, spacingRight: 0,
+                //borderColor: 'black', borderWidth: 1,
+                //animation: {duration: 3000} //设置更新图表的动画时间，不涉及初始时的动画
+            },
+            series: highcharts_data,
+            title: {text: '绘图结果01', style: {fontSize: "30px", fontWeight: 'bold'}, margin: 0},
+            legend: {enabled: false},  //不显示图例
+            xAxis: {
+                title: {enabled: true, text: 'Xline', style: {fontWeight: 'normal'}},
+            },
+            yAxis: {
+                title: {enabled: true, text: 'Yline', style: {fontWeight: 'normal'}},
+                //labels: {enabled: false},  //设置y轴不显示标签内容
+                //categories: col_name_list,
+            },
+            plotOptions: {
+                series: {animation: false, lineWidth: 1, color: 'green'},  //设置初始化图表时的动画
+            },
+            navigation: {menuStyle: {background: '#E0E0E0'}}
+        });
+    }
+</script>
+
+</html>

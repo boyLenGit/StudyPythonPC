@@ -1,0 +1,2 @@
+model_checkpoint_path: "tensorA_8.1_save1_weights"
+all_model_checkpoint_paths: "tensorA_8.1_save1_weights"

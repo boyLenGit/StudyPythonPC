@@ -44,8 +44,7 @@ def len_save_segy_only_trace(input_list, read_path, save_path):
     :return:
     """
     # ------------------------------ 数据初始化 ------------------------------
-    input_list = numpy.array(input_list)
-    input_list.dtype = 'float32'
+    input_list = numpy.array(input_list, dtype=numpy.float32)
     input_len = len(input_list)
     # -------------------------------------------------------------------------
     with segyio.open(read_path, ignore_geometry=True) as src:

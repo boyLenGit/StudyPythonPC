@@ -123,12 +123,11 @@ def len_kernel_2d_merge_by_add(input_been_kernel, input_origin, dimension_kernel
     exchange_fu = [len_exchange_1v_to_2v(data1) for data1 in up_dimension_fu]
     print(' 换维后维度:{0};'.format(numpy.array(exchange_fu).shape), end='')
     # -------------------- (2764, 256, 2, 256)->(2764, 256, 462) --------------------
-    merge_1v = helper_len_kernel_2d_merge_by_add(exchange_fu, len_1v_origin, size=size, step=step)
+    merge_1v = helper_len_kernel_2d_merge_by_add_plus(exchange_fu, len_1v_origin, size=size, step=step)
     print(' 1维融合后维度:{0};'.format(numpy.array(merge_1v).shape), end='')
     merge_2v = []
     for data2 in merge_1v:
-        # print('len长度2：merge_1v:', numpy.array(merge_1v).shape, 'data2:', numpy.array(data2).shape)
-        merge_2v.append(helper_len_kernel_2d_merge_by_add(data2, len_2v_origin, size=size, step=step))
+        merge_2v.append(helper_len_kernel_2d_merge_by_add_plus(data2, len_2v_origin, size=size, step=step))
     print(' 2维融合后维度:{0};'.format(numpy.array(merge_2v).shape), end='')
     return merge_2v
 
@@ -166,19 +165,24 @@ def helper_len_kernel_2d_merge_by_add(input_data, len_origin, size=256, step=224
         if i1 == len_input_1v - 2:  # 如果i1位于最后一个位置
             area_this, area_last = input_data[i1][0:distance], input_data[i1 - 1][len_input_2v - distance:len_input_2v]
             temp_area_merge = ((numpy.array(area_this) + numpy.array(area_last)) / 2).tolist()
+            if (len_origin - size - i1*step) <= distance:
+                temp_merge = temp_area_merge[0:len_origin - size - i1*step]
+                merge_fu.extend(temp_merge)
+                continue
             temp_merge = temp_area_merge
             temp_merge.extend(input_data[i1][distance:len_origin - size - i1*step])
             merge_fu.extend(temp_merge)
-            print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape), '倒2', len_origin - size)
+            # print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape), '倒2', len_origin - size - i1*step)
             continue
         if i1 == len_input_1v - 1:  # 如果i1位于最后一个位置
             distance_remain = len(input_data[i1]) - (len_origin - step * i1 - distance_half) + distance_half
             area_this, area_last = input_data[i1][0:distance_remain], input_data[i1 - 1][len_input_2v - distance_remain:len_input_2v]
+            # print('Shape:', numpy.array(area_this).shape, numpy.array(area_last).shape)
             temp_area_merge = ((numpy.array(area_this) + numpy.array(area_last)) / 2).tolist()
             temp_merge = temp_area_merge
             temp_merge.extend(input_data[i1][distance_remain:len_origin])
             merge_fu.extend(temp_merge)
-            print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape), '倒1')
+            # print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape), '倒1', distance_remain)
             break
         if i1 == 0:  # 刚开始时，起始索引需要为0
             temp_merge = input_data[i1][0:step]
@@ -188,5 +192,58 @@ def helper_len_kernel_2d_merge_by_add(input_data, len_origin, size=256, step=224
             temp_merge = temp_area_merge
             temp_merge.extend(input_data[i1][distance:step])
         merge_fu.extend(temp_merge)
-        print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape))
+        # print('& 位置{0} 维度:{1}'.format(i1, numpy.array(merge_fu).shape))
     return merge_fu
+
+
+def helper_len_kernel_2d_merge_by_add_plus(input_data, len_origin, size=256, step=224):
+    """
+
+    :param input_data:
+    :param len_origin:
+    :param size:
+    :param step:
+    :return:
+    """
+    merge_fu = []
+    overlap, overlap_half = int(size - step), int((size - step) / 2)
+    len_input_1v, len_input_2v = len(input_data), len(input_data[0])
+    for i1 in range(len_input_1v):
+        input_data[i1] = input_data[i1].tolist() if type(input_data[i1]) is numpy.ndarray else input_data[i1]
+        if i1 == 0:
+            merge_fu = input_data[i1]
+            continue
+        if i1 == len_input_1v - 1:
+            overlap_end = size - (len_origin - len(merge_fu))
+            area_last, area_this = merge_fu[-overlap_end:], input_data[i1][:overlap_end]
+            del merge_fu[-overlap_end:]
+            area_merged = helper__len_kernel_2d_merge_by_add_plus__merger_by_multiply(this=area_this, last=area_last)
+            merge_fu.extend(area_merged)
+            merge_fu.extend(input_data[i1][overlap_end:])
+            break
+        area_last, area_this = merge_fu[-overlap:], input_data[i1][:overlap]
+        del merge_fu[-overlap:]
+        area_merged = helper__len_kernel_2d_merge_by_add_plus__merger_by_multiply(this=area_this, last=area_last)
+        merge_fu.extend(area_merged)
+        merge_fu.extend(input_data[i1][overlap:])
+    return merge_fu
+
+
+def helper__len_kernel_2d_merge_by_add_plus__merger_by_multiply(this, last):
+    """
+    [功能] 辅助函数，将地震数据块的重叠部分进行加权融合，从而避免块边缘的合成痕迹明显的问题
+    :param this:当前块的重叠区域
+    :param last:上一个块的重叠区域
+    :return:加权融合后的块
+    """
+    len_1v = len(this)
+    # 构建权重矩阵
+    for i1 in range(len_1v):
+        this[i1] = (numpy.array(this[i1]) * ((i1 + 1) / (len_1v + 1)))
+        last[i1] = (numpy.array(last[i1]) * ((len_1v - i1) / (len_1v + 1)))
+        # print((i1 + 1), (len_1v - i1), ((i1 + 1) / (len_1v + 1)), ((len_1v - i1) / (len_1v + 1)))
+    return (numpy.array(this) + numpy.array(last)).tolist()
+
+
+
+

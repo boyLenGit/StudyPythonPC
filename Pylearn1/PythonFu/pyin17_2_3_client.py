@@ -3,6 +3,7 @@ import socket
 
 socket2 = socket.socket()
 host = '192.168.3.42'
+# host = '180.201.161.93'
 port = 8090
 socket2.connect((host, port))
 print('Client Connected')

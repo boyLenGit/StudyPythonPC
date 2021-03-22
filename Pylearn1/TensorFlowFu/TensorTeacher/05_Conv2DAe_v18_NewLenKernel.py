@@ -18,8 +18,8 @@ path_model_weights_save = 'D:/boyLen/Python/Pylearn1/TensorFlowFu/TensorTeacher/
 path_model_weights_load = 'D:/boyLen/Python/Pylearn1/TensorFlowFu/TensorTeacher/data/05_Conv2DAE/v16_final'
 
 path_segy_file_label = 'E:/Research/data/ArtificialData/extract_segy_valid_line_v2.segy'
-# path_segy_file_be_forecast = 'E:/Research/data/CMP_INL2000_stk_org_gain.SEGY'
-path_segy_file_be_forecast = 'J:/new.sgy'
+path_segy_file_be_forecast = 'E:/Research/data/CMP_INL2000_stk_org_gain.SEGY'
+# path_segy_file_be_forecast = 'J:/new.sgy'
 # path_segy_file_be_forecast = 'E:/Research/data/ZG43_2_STK_GAIN_0220_1.segy'
 path_segy_file_train = 'E:/Research/data/ArtificialData/test_Mix_Noisy_v3.segy'
 
@@ -82,7 +82,7 @@ def forecast_len_kernel_v2():
     """
     # ****** 初始化变量 ******
     # dimension2d_input, kernel_size, kernel_step, to_be_one = 64, 64, 48, 10
-    dimension2d_input, kernel_size, kernel_step, to_be_one = 64, 64, 24, 10
+    dimension2d_input, kernel_size, kernel_step, to_be_one = 256, 256, 224, 10000
     data_origin = LenSegy.len_read_segy_file_only_trace(path_segy_file_be_forecast)['trace_raw'][:]
     data_kernel2d_cut, dimension_kernels = LenDataProcess.len_kernel_2d_cut(data_origin, kernel_size=kernel_size, kernel_step=kernel_step)
     dataset = LenDataProcess.segy_to_tf_for_result_1output(data=data_kernel2d_cut, to_be_one=to_be_one, reshape_dim=None, expand_axis=3, batch_size=8)
@@ -98,7 +98,12 @@ def forecast_len_kernel_v2():
     data_fusion = LenDataProcess.len_kernel_2d_merge_by_add(data_fusion, data_origin, dimension_kernels, size=kernel_size, step=kernel_step)
     LenSegy.len_save_segy_only_trace_multi_process(data_fusion, path_segy_file_be_forecast, 'F:/test_result_v5.segy')
 
+def extract():
+    data_origin = LenSegy.len_read_segy_file_only_trace('E:/Research/data/F3_entire.segy')['trace_raw'][:30219]
+    LenSegy.len_save_segy_only_trace_multi_process(data_origin, 'E:/Research/data/F3_entire.segy', 'F:/test_result_v6.segy')
+
 
 if __name__ == '__main__':
     # train()
-    forecast_len_kernel_v2()
+    # forecast_len_kernel_v2()
+    extract()

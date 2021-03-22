@@ -23,6 +23,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="ccc6385a-92be-4d47-b671-32a8b5c6ad9b" name="1215-CF2">
+        <fileTransfer rootFolder="/home/boylen/clowdflows" accessType="SFTP" host="180.201.161.93" port="22" sshConfigId="5d2259a2-2fad-4282-9a68-888a3f7a4c1a" sshConfig="boylen@180.201.161.93:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>
